@@ -2,6 +2,10 @@ body {
   background-color: #f5f5f5;
 }
 
+* {
+  word-break: break-all;
+}
+
 .list-group-item:hover {
   background-color: #eee;
   cursor: pointer;
@@ -90,4 +94,111 @@ body {
   #projects_div [class^=col-] {
     height: auto;
   }
+}
+
+#chat_div .chat_header {
+  height: 40px;
+  background-color: #ddd;
+  color: #fff;
+  line-height: 40px;
+  padding-left: 15px;
+}
+
+#chat_div .chat_container {
+  background-color: #fff;
+  display: flex;
+  height: calc(100vh - 70px - 56px - 80px);
+  border-left: 2px solid #ddd;
+  border-right: 2px solid #ddd;
+  border-bottom: 2px solid #ddd;
+}
+#chat_div .chat_container .chat_sidebar {
+  height: calc(100vh - 70px - 56px - 80px);
+  width: 200px;
+  border-right: 2px solid #ddd;
+  border-bottom: 2px solid #ddd;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#chat_div .chat_container .chat_sidebar div {
+  display: flex;
+  height: 40px;
+  line-height: 40px;
+  border-bottom: 1px solid #eee;
+}
+
+#chat_div .chat_container .chat_sidebar div:hover {
+  cursor: pointer;
+}
+
+#chat_div .chat_container .chat_sidebar div:last-child {
+  border-bottom: 0;
+}
+
+#chat_div .chat_container .chat_sidebar div div:first-child {
+  flex: 1;
+}
+
+#chat_div .chat_container .chat_sidebar div div span:first-child {
+  font-size: 36px;
+  /* color: greenyellow; */
+  padding: 0 10px;
+}
+
+#chat_div .chat_container .chat_sidebar div div img {
+  margin-top: 8px;
+}
+
+#chat_div .chat_container .chat_sidebar div div span:nth-child(2) {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#chat_div .chat_container .chat_sidebar div div:last-child {
+  /* width: 40px; */
+  padding-right: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+#chat_div .chat_container .chat_right {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#chat_div .chat_container .chat_message {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#chat_div .chat_container .chat_message img {
+  max-width: 80%;
+}
+
+#chat_div .chat_container .chat_input {
+  height: 100px;
+  border-top: 2px solid #ddd;
+  padding: 10px;
+  outline: 0;
+  overflow: auto;
+}
+
+#chat_div .chat_container .chat_input img {
+  max-width: 100%;
+}
+
+#chat_div .chat_container .chat_right button {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
+
+.chat_content {
+  padding: 5px 10px;
+  margin-top: 10px;
 }

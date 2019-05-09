@@ -45,6 +45,41 @@ function shouldUpdate(data) {
     if (currentPath === `/apidoc/${data.detail.project.id}`) {
       renderApidoc(data);
     }
+  } else if (data.code === 921) {
+    if (currentPath === '/chat') {
+      if (data.detail.users.length > 0) {
+        sessionStorage.setItem('users', JSON.stringify(data.detail));
+        renderChatUsers();
+      }
+    }
+  } else if (data.code === 924) {
+    let openChatUserId = sessionStorage.getItem('openChatUserId');
+    if (currentPath === '/chat' && parseInt(openChatUserId) === data.detail.targetUserId) {
+      data.detail.chats.reverse();
+      sessionStorage.setItem(`chat_${openChatUserId}`, JSON.stringify(data.detail));
+      if (openChatUserId !== '0') {
+        sessionStorage.setItem(`chat_${data.detail.userId}`, JSON.stringify(data.detail));
+      }
+      renderChatMessage();
+    }
+  } else if (data.code === 926) {
+    let targetChatObj = JSON.parse(sessionStorage.getItem(`chat_${data.detail.targetUserId}`));
+    targetChatObj.chats.push(data.detail.chat);
+    sessionStorage.setItem(`chat_${data.detail.targetUserId}`, JSON.stringify(targetChatObj));
+
+    if (data.detail.targetUserId != '0') {
+      let chatObj = JSON.parse(sessionStorage.getItem(`chat_${data.detail.userId}`));
+      chatObj.chats.push(data.detail.chat);
+      sessionStorage.setItem(`chat_${data.detail.userId}`, JSON.stringify(chatObj));
+    }
+
+    let openChatUserId = sessionStorage.getItem('openChatUserId');
+    if (
+      currentPath === '/chat' &&
+      (openChatUserId === data.detail.targetUserId || openChatUserId === data.detail.userId)
+    ) {
+      renderChatMessage();
+    }
   }
   $('.spinner').hide();
 }
@@ -93,7 +128,7 @@ function tasksTemplate(task) {
         <td>
           <a data-pjax href="/project/${task.project.id}/task/${task.id}">
             ${task.name}
-            <span class="label label-info pull-right">${task.executorUser.username}</span>
+            <img src="${task.executorUser.avatar}" width="24" class="pull-right" alt="avatar"/>
           </a>
         </td>
       </tr>
@@ -335,4 +370,81 @@ function uploadFile(id) {
       }
     }
   });
+}
+
+function renderChatUsers() {
+  let data = JSON.parse(sessionStorage.getItem('users'));
+  let userId = sessionStorage.getItem('userId');
+  let users = _.filter(data.users, (item) => item.id !== parseInt(userId));
+  let user_divs = _.map(
+    users,
+    (item) => `
+    <div class="chat_user_div" data-id='${item.id}' onclick="openChat(${item.id})">
+      <div>
+        <span ${item.online ? 'style="color: greenyellow"' : 'style="color: gray"'}>•</span>
+        <img src="${item.avatar}" width="24" height="24" alt=""/>&nbsp;
+        <span>${item.username}</span>
+      </div>
+      <div>${item.department ? item.department.name : '&nbsp;'}</div>
+    </div>
+  `
+  ).join('');
+  $('.chat_sidebar').html(`
+    <div class="chat_user_div" data-id='0' onclick="openChat(0)">
+      <div>
+        <span style="color: greenyellow">•</span>
+        <span>广播室</span>
+      </div>
+      <div>&nbsp;</div>
+    </div>
+    ${user_divs}
+  `);
+  let openChatUserId = sessionStorage.getItem('openChatUserId');
+  if (openChatUserId) {
+    $(`.chat_user_div[data-id='${openChatUserId}']`).click();
+  } else {
+    $('.chat_sidebar div:eq(0)').click();
+  }
+}
+
+function openChat(id) {
+  sessionStorage.setItem('openChatUserId', id);
+  ws.emit('data', {
+    code: 923,
+    detail: { pageNo: 1, beforeId: 0, userId: sessionStorage.getItem('userId'), targetUserId: id }
+  });
+  $.each($(`.chat_user_div`), function(index, item) {
+    $(item).css('background-color', '#fff');
+  });
+  $(`.chat_user_div[data-id='${id}']`).css('background-color', '#eee');
+}
+
+function renderChatMessage() {
+  let data = JSON.parse(sessionStorage.getItem(`chat_${sessionStorage.getItem('openChatUserId')}`));
+  let message_divs = _.map(data.chats, (item) => {
+    let mine = parseInt(data.userId) === parseInt(item.user.id);
+    if (mine) {
+      return `
+        <div class="text-right" style="margin: 10px 0;">
+          <div class="chat_user_info">${moment(item.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+            ${item.user.username}
+            <img src="${item.user.avatar}" width="24" style="border-radius: 50%;" alt=""/>
+          </div>
+          <div class="chat_content">${item.content}</div>
+        </div>
+      `;
+    } else {
+      return `
+        <div style="margin: 10px 0;">
+          <div class="chat_user_info">
+          <img src="${item.user.avatar}" width="24" style="border-radius: 50%;" alt=""/>
+          ${item.user.username}
+          ${moment(item.createdAt).format('YYYY-MM-DD HH:mm:ss')}</div>
+          <div class="chat_content">${item.content}</div>
+        </div>
+      `;
+    }
+  });
+  $('.chat_message').html(message_divs);
+  $('.chat_message').animate({ scrollTop: $('.chat_message')[0].scrollHeight }, 200);
 }

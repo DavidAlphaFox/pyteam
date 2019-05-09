@@ -8,7 +8,9 @@ module.exports = {
   ws_url: is_production ? 'https://team.yiiu.co' : `http://localhost:${port}`,
   ws_secure: is_production,
   attachment_dir: path.join(__dirname, 'static', 'attachments'),
+  avatar_dir: path.join(__dirname, 'static', 'avatar'),
   admins: [ 'admin' ], // 管理员用户名
+  pageSize: 40,
   mysql: is_production
     ? {
         host: 'localhost',
@@ -52,6 +54,12 @@ module.exports = {
     APIDOCS: 917,
     UPDATE_APIDOC: 918,
     APIDOC: 919,
-    DELETE_APIDOC: 920
+    DELETE_APIDOC: 920,
+    USERS: 921,
+    FETCH_USERS: 922,
+    FETCH_CHAT: 923,
+    CHAT: 924,
+    CREATE_CHAT: 925,
+    NEW_CHAT: 926
   }
 };

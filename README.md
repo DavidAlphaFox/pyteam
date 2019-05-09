@@ -72,9 +72,15 @@ pm2 restart pyteam
 
 ![](./screenshot/task.gif)
 
+![](./screenshot/chatroom.gif)
+
 ## 使用场景
 
 内网使用，外网碰到的问题请自行解决
+
+另外，请在 `Chrome` `Firefox` `Safari` 浏览器上使用，不要使用其它浏览器，即使是国产的套壳浏览器也不行
+
+如果你想测试浏览器的兼容性，可以查看一下技术栈里相关技术的浏览器兼容性
 
 ## 使用方法
 
